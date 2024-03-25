@@ -1,0 +1,2 @@
+FLASK_APP=hulk_apps_chat
+FLASK_ENV=development
