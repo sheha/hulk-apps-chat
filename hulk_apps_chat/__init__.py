@@ -9,7 +9,7 @@ from flask_session import Session
 import redis
 
 db = SQLAlchemy()
-
+socketio = SocketIO()
 
 def create_app():
     app = Flask(__name__)
@@ -35,7 +35,7 @@ def create_app():
 
     Session(app)  # Initialize Flask-Session here
     CORS(app, resources={r"/*": {"origins": cors_origins}})
-    socketio = SocketIO(app, cors_allowed_origins=cors_origins)
+    socketio.init_app(app, cors_allowed_origins=cors_origins)
 
     db.init_app(app)
     migrate = Migrate(app, db)
