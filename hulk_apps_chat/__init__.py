@@ -36,8 +36,8 @@ def create_app():
     return app
 
 
-if __name__ == '__main__':
-    from hulk_apps_chat import create_app, socketio
-
-    app = create_app()
-    socketio.run(app, debug=True)
+# if __name__ == '__main__':
+#     from hulk_apps_chat import create_app, socketio
+#
+#     app = create_app()
+#     socketio.run(app, debug=True)
