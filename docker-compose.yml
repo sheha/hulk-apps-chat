@@ -5,7 +5,7 @@ services:
     image: postgres:latest
     environment:
       POSTGRES_USER: hulk_user
-      POSTGRES_PASSWORD: '!pass0123'
+      POSTGRES_PASSWORD: hulkpass
       POSTGRES_DB: hulk_chat_db
     ports:
       - "5432:5432"

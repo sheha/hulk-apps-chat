@@ -1,2 +1,2 @@
-FLASK_APP=hulk_apps_chat
+FLASK_APP=app.py
 FLASK_ENV=development

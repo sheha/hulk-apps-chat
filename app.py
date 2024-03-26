@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
+load_dotenv()
 from hulk_apps_chat import create_app, socketio
-
-load_dotenv()  # Take environment variables from .env for development environment
+from hulk_apps_chat.models import User, Message
 
 app = create_app()
 
