@@ -76,9 +76,27 @@ def handle_message(data):
     room = data['room']
     message_text = data['message']
     timestamp = datetime.utcnow()
+    recipient_id = data.get('recipient_id', None)
 
-    message = Message(username=username, room=room, message=message_text, timestamp=timestamp)
+    if recipient_id:
+        # This is a private message
+        message = Message(username=username, room=room, recipient_id=recipient_id, message=message_text, timestamp=timestamp)
+        # Emit to the specific recipient if it's a private message
+        emit('receive_message', {
+            'username': username,
+            'message': message_text,
+            'timestamp': timestamp.strftime('%Y-%m-%d %H:%M:%S'),
+            'recipient_id': recipient_id  # Include this to let the client know it's a private message
+        }, room=recipient_id)
+    else:
+        # This is a public message
+        message = Message(username=username, room=room, message=message_text, timestamp=timestamp)
+        # Emit to the room for public messages
+        emit('receive_message', {
+            'username': username,
+            'message': message_text,
+            'timestamp': timestamp.strftime('%Y-%m-%d %H:%M:%S')
+        }, room=room)
+
     db.session.add(message)
     db.session.commit()
-
-    emit('receive_message', data, room=room)
