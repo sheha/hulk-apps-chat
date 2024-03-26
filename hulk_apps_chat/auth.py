@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from .models import db, User
 from flask_jwt_extended import JWTManager, create_access_token
@@ -38,7 +38,8 @@ def login():
     if user and check_password_hash(user.password_hash, data.get('password')):
         # Create JWT token
         access_token = create_access_token(identity={'user_id': user.id}, expires_delta=datetime.timedelta(hours=24))
-
+        # Set user_id in session
+        session['user_id'] = str(user.id)
         return jsonify({'access_token': access_token}), 200
 
     return jsonify({'message': 'Invalid username or password'}), 401

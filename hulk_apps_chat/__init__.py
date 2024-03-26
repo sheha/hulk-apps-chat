@@ -1,6 +1,8 @@
 import os
 from flask import Flask
 from flask_jwt_extended import JWTManager
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from flask_migrate import Migrate
 from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
@@ -10,6 +12,14 @@ import redis
 
 db = SQLAlchemy()
 socketio = SocketIO()
+
+# Initialize Flask-Limiter, general use limiter for requests but not for socket operations
+limiter = Limiter(
+    key_func=get_remote_address,  # Use the remote address as the key for rate limiting
+    default_limits=["10 per minute", "300 per day"]  # Default rate limits
+)
+# redis client for other uses other than user session management
+redis_client = redis.StrictRedis.from_url(os.getenv('REDIS_URL'), decode_responses=True)
 
 
 def create_app():
@@ -37,6 +47,8 @@ def create_app():
     Session(app)  # Initialize Flask-Session here
     CORS(app, resources={r"/*": {"origins": cors_origins}})
     socketio.init_app(app, cors_allowed_origins=cors_origins)
+
+    limiter.init_app(app)
 
     db.init_app(app)
     migrate = Migrate(app, db)
