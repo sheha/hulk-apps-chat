@@ -39,7 +39,7 @@ This document provides instructions for setting up and running the backend for t
 4. **Database Migrations**:
     - Initialize the database and run migrations:
       ```bash
-      poetry run flask db init  # Only needed if you haven't run it before
+      poetry run flask db init  
       poetry run flask db migrate -m "Initial migration."
       poetry run flask db upgrade
       ```
