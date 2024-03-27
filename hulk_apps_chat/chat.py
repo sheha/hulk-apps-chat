@@ -1,37 +1,12 @@
-import os
-from time import time
-
 from flask import Blueprint, request, session
 from flask_socketio import join_room, leave_room, send, emit
 
 from datetime import datetime
 from . import socketio, db, redis_client
 from .models import Message
+from .utils import set_user_session, get_user_id, remove_user_session, is_rate_limited
 
 chat_bp = Blueprint('chat', __name__)
-
-# Rate limit settings: No more than 1 message every 5 seconds
-RATE_LIMIT_SECONDS = int(os.getenv('RATE_LIMIT_SECONDS', '5'))
-
-
-def is_rate_limited(user_id):
-    """
-    Check if the user is rate limited based on the last message timestamp.
-    Now using Redis for persistence.
-    """
-    key = f"user:{user_id}:last_message_time"
-    last_message_time = redis_client.get(key)
-
-    if last_message_time is not None:
-        last_message_time = float(last_message_time)
-        current_time = time()
-
-        if (current_time - last_message_time) < RATE_LIMIT_SECONDS:
-            return True
-
-    # Update the last message timestamp for the user in Redis
-    redis_client.set(key, str(current_time), ex=RATE_LIMIT_SECONDS)
-    return False
 
 
 @socketio.on('join')
@@ -80,7 +55,8 @@ def handle_message(data):
 
     if recipient_id:
         # This is a private message
-        message = Message(username=username, room=room, recipient_id=recipient_id, message=message_text, timestamp=timestamp)
+        message = Message(username=username, room=room, recipient_id=recipient_id, message=message_text,
+                          timestamp=timestamp)
         # Emit to the specific recipient if it's a private message
         emit('receive_message', {
             'username': username,
@@ -100,3 +76,27 @@ def handle_message(data):
 
     db.session.add(message)
     db.session.commit()
+
+
+@socketio.on('connect')
+def handle_connect():
+    user_id = session.get('user_id')
+    if user_id:
+        session_id = request.sid
+        set_user_session(user_id, session_id)
+
+        redis_client.set(f'user_online:{user_id}', 'online')
+        # Emit an event to update the user's online status
+        emit('user_online', {'user_id': user_id, 'online': True}, broadcast=True)
+
+
+@socketio.on('disconnect')
+def handle_disconnect():
+    session_id = request.sid
+    user_id = get_user_id(session_id)
+    if user_id:
+        remove_user_session(user_id, session_id)
+
+        redis_client.delete(f'user_online:{user_id}')
+        # Emit an event to update the user's online status
+        emit('user_online', {'user_id': user_id, 'online': False}, broadcast=True)
