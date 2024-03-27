@@ -1,12 +1,10 @@
-from flask import Blueprint, request, session
+from flask import request, session
 from flask_socketio import join_room, leave_room, send, emit
 
 from datetime import datetime
-from . import socketio, db, redis_client
-from .models import Message
-from .utils import set_user_session, get_user_id, remove_user_session, is_rate_limited
-
-chat_bp = Blueprint('chat', __name__)
+from hulk_apps_chat import socketio, db, redis_client
+from ..models import Message
+from hulk_apps_chat.utils import set_user_session, get_user_id, remove_user_session, is_rate_limited
 
 
 @socketio.on('join')

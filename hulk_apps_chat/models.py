@@ -20,3 +20,14 @@ class Message(db.Model):
 
     def __repr__(self):
         return '<Message {}>'.format(self.body)
+
+
+class ChatRoom(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), unique=True, nullable=False)
+    description = db.Column(db.String(255), nullable=True)
+    creator_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    creator = db.relationship('User', foreign_keys=[creator_id])
+
+    def __repr__(self):
+        return f'<ChatRoom {self.name}>'
