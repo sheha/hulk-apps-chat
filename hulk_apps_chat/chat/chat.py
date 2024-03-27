@@ -98,3 +98,23 @@ def handle_disconnect():
         redis_client.delete(f'user_online:{user_id}')
         # Emit an event to update the user's online status
         emit('user_online', {'user_id': user_id, 'online': False}, broadcast=True)
+
+
+@socketio.on('message_delivered')
+def on_message_delivered(data):
+    message_id = data['message_id']
+    message = Message.query.get(message_id)
+    if message:
+        message.status = 'delivered'
+        db.session.commit()
+        emit('update_message_status', {'message_id': message_id, 'status': 'delivered'}, room=message.room)
+
+
+@socketio.on('message_read')
+def on_message_read(data):
+    message_id = data['message_id']
+    message = Message.query.get(message_id)
+    if message:
+        message.status = 'read'
+        db.session.commit()
+        emit('update_message_status', {'message_id': message_id, 'status': 'read'}, room=message.room)

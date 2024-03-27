@@ -17,6 +17,7 @@ class Message(db.Model):
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     recipient_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)  # Nullable for group messages
     recipient = db.relationship('User', foreign_keys=[recipient_id])
+    status = db.Column(db.String(50), default='sent')
 
     def __repr__(self):
         return '<Message {}>'.format(self.body)
