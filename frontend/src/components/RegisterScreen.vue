@@ -1,9 +1,9 @@
 <template>
   <div class="login">
-    <h2>Login</h2>
+    <h2>Register</h2>
     <input v-model="username" type="text" placeholder="Username"/>
     <input v-model="password" type="password" placeholder="Password"/>
-    <button @click="login">Login</button>
+    <button @click="register">Register</button>
   </div>
 </template>
 <script>
@@ -17,16 +17,16 @@ export default {
     };
   },
   methods: {
-    async login() {
+    async register() {
       try {
-        const response = await axios.post('http://localhost:5000/login', {
+        const response = await axios.post('http://localhost:5000/register', {
           username: this.username,
           password: this.password,
         });
-        localStorage.setItem('userToken', response.data.access_token);
-        await this.$router.push('/chat');
+        console.log(response)
+        // Handle success, store the token, navigate to chat, etc.
       } catch (error) {
-        console.log(error)
+        // Handle error
       }
     },
   },
@@ -41,7 +41,6 @@ export default {
   align-items: center;
   margin-top: 60px;
 }
-
 .login input, .login button {
   margin: 10px;
   padding: 10px;
