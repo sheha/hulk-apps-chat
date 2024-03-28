@@ -49,3 +49,10 @@ def get_user_id(session_id):
 def remove_user_session(user_id, session_id):
     redis_client.delete(f"user_session:{user_id}")
     redis_client.delete(f"session_user:{session_id}")
+
+#CHAT ROOM validation
+import re
+
+def is_valid_room_name(name):
+    """Define room name validation logic here."""
+    return re.match(r'^\w+$', name)  # Example: Alphanumeric characters only

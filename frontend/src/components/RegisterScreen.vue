@@ -24,9 +24,9 @@ export default {
           password: this.password,
         });
         console.log(response)
-        // Handle success, store the token, navigate to chat, etc.
+        await this.$router.push('/login');
       } catch (error) {
-        // Handle error
+        console.error(error)
       }
     },
   },
