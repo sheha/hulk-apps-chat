@@ -97,37 +97,53 @@ export default {
 .chat-area {
   display: flex;
   justify-content: center;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  font-size: 16px;
 }
 
-.chat-window {
-  flex-grow: 2;
-  display: flex;
-  flex-direction: column;
-  margin-right: 20px;
+.chat-window, .room-members {
+  background-color: #222;
+  border: 2px solid var(--border-color);
+  padding: 20px;
+  margin: 10px;
+  border-radius: 8px;
 }
 
 .messages {
-  flex-grow: 1;
+  max-height: 300px;
   overflow-y: auto;
+}
+
+.message {
+  background: #000;
+  color: var(--neon-color);
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 5px;
 }
 
 .message-input {
   display: flex;
-  margin-top: 1rem;
+  justify-content: space-between;
+  margin-top: 20px;
 }
 
 input, button {
-  padding: 0.5rem;
-  margin: 0.25rem;
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  background-color: #222;
+  color: var(--text-color);
+  border-radius: 4px;
 }
 
-.room-members {
-  flex-grow: 1;
-  margin-left: 20px;
+button {
+  cursor: pointer;
+  background-color: var(--neon-color);
+  color: #000;
 }
 
-.status {
-  font-size: 0.75rem;
-  text-align: right;
+button:hover {
+  background-color: var(--text-color);
 }
 </style>

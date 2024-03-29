@@ -84,18 +84,16 @@ export default {
 <style scoped>
 .app-container {
   display: flex;
+  background-color: var(--background-color);
+  color: var(--text-color);
 }
 
-.rooms-list {
-  width: 20%;
-  overflow-y: auto;
-  height: 100vh;
-  padding: 1rem;
-}
-
-.chat-container {
-  flex-grow: 1;
-  padding: 1rem;
+.rooms-list, .chat-container {
+  padding: 20px;
+  border: 2px solid var(--border-color);
+  margin: 10px;
+  border-radius: 8px;
+  background-color: #222;
 }
 
 ul {
@@ -105,10 +103,30 @@ ul {
 
 li {
   cursor: pointer;
-  margin-bottom: 0.5rem;
+  color: var(--neon-color);
+  margin-bottom: 10px;
 }
 
-form {
-  margin-bottom: 1rem;
+li:hover {
+  color: var(--text-color);
+}
+
+form input, form button {
+  padding: 10px;
+  margin: 5px 0;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background-color: #222;
+  color: var(--text-color);
+}
+
+form button {
+  cursor: pointer;
+  background-color: var(--neon-color);
+  color: #000;
+}
+
+form button:hover {
+  background-color: var(--text-color);
 }
 </style>
