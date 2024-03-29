@@ -35,22 +35,51 @@ export default {
       members: [],
     };
   },
-  async mounted() {
-    this.socket = io('http://localhost:5000', {
-      query: {token: localStorage.getItem('userToken')},
-    });
-
-    this.socket.on('receive_message', this.receiveMessage);
-    this.socket.on('update_message_status', this.updateMessageStatus);
-
-    this.socket.emit('join', {
-      room: this.roomId,
-      token: localStorage.getItem('userToken')
-    });
-    await this.fetchMessages();
-    await this.fetchRoomMembers();
+  watch: {
+    roomId(newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this.handleRoomChange();
+      }
+    },
   },
+  mounted() {
+    this.initializeSocket();
+  },
+
   methods: {
+    initializeSocket() {
+      this.socket = io('http://localhost:5000', {
+        query: {token: localStorage.getItem('userToken')},
+      });
+
+      this.socket.on('connect', () => {
+        this.joinRoom();
+      });
+
+      this.socket.on('disconnect', (reason) => {
+        console.log(`Disconnected: ${reason}`);
+      });
+
+      this.socket.on('receive_message', this.receiveMessage);
+      this.socket.on('update_message_status', this.updateMessageStatus);
+    },
+    joinRoom() {
+      if (this.roomId) {
+        this.socket.emit('join', {
+          room: this.roomId,
+          token: localStorage.getItem('userToken'),
+        });
+        this.fetchRoomMembers();
+        this.fetchMessages();
+      }
+    },
+    handleRoomChange() {
+      if (this.socket) {
+        // Leave the old room if roomId changes
+        this.socket.emit('leave', {room: this.oldRoomId});
+        this.joinRoom(); // Join the new room
+      }
+    },
     async fetchMessages() {
       try {
         const response = await axios.get(`http://localhost:5000/chat/rooms/${this.roomId}/messages`, {

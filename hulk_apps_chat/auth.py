@@ -36,9 +36,9 @@ def login():
     user = User.query.filter_by(username=data.get('username')).first()
 
     if user and check_password_hash(user.password_hash, data.get('password')):
-        # Create JWT token
-        access_token = create_access_token(identity={'user_id': user.id}, expires_delta=datetime.timedelta(hours=24))
-        # Set user_id in session
+        # Adjusted to set the identity directly to user's ID
+        access_token = create_access_token(identity=user.id, expires_delta=datetime.timedelta(hours=24))
+        # Set user_id in session (optional, depending on your session handling strategy)
         session['user_id'] = str(user.id)
         return jsonify({'access_token': access_token}), 200
 

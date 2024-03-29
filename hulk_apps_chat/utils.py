@@ -14,10 +14,11 @@ def is_rate_limited(user_id):
     """
     key = f"user:{user_id}:last_message_time"
     last_message_time = redis_client.get(key)
+    current_time = time()
 
     if last_message_time is not None:
         last_message_time = float(last_message_time)
-        current_time = time()
+
 
         if (current_time - last_message_time) < RATE_LIMIT_SECONDS:
             return True

@@ -3,7 +3,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from . import chat_bp
 from .. import db
-from ..models import ChatRoom, User
+from ..models import ChatRoom, User, Message
 from ..utils import is_valid_room_name
 
 
@@ -99,3 +99,18 @@ def remove_member(room_id):
         return jsonify({"message": "User removed from room"}), 200
     else:
         return jsonify({"message": "User not in room"}), 404
+
+
+@chat_bp.route('/rooms/<int:room_id>/messages', methods=['GET'])
+@jwt_required()
+def get_messages(room_id):
+    messages = Message.query.filter_by(room_id=room_id).order_by(Message.timestamp.asc()).all()
+    messages_json = [{
+        'id': message.id,
+        'username': message.username,
+        'message': message.message,
+        'timestamp': message.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
+        'status': message.status
+    } for message in messages]
+
+    return jsonify({'messages': messages_json}), 200

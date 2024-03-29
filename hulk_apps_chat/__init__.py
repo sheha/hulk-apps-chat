@@ -14,10 +14,10 @@ db = SQLAlchemy()
 socketio = SocketIO()
 
 # Initialize Flask-Limiter, general use limiter for requests but not for socket operations
-limiter = Limiter(
-    key_func=get_remote_address,  # Use the remote address as the key for rate limiting
-    default_limits=["10 per minute", "300 per day"]  # Default rate limits
-)
+# limiter = Limiter(
+#     key_func=get_remote_address,  # Use the remote address as the key for rate limiting
+#     default_limits=["10 per minute", "300 per day"]  # Default rate limits
+# )
 # redis client for other uses other than user session management
 redis_client = None
 
@@ -38,7 +38,11 @@ def create_app():
     app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
     redis_client = redis.StrictRedis.from_url(os.getenv('REDIS_URL'), decode_responses=True)
 
+    app.config['SESSION_COOKIE_SECURE'] = os.getenv('FLASK_ENV') == 'production'
+    app.config['SESSION_COOKIE_HTTPONLY'] = True
+
     cors_origins = os.getenv('CORS_ORIGINS')
+    print(cors_origins)
 
     # Redis configuration for Flask-Session
     app.config['SESSION_TYPE'] = 'redis'
@@ -50,7 +54,7 @@ def create_app():
     CORS(app, resources={r"/*": {"origins": cors_origins}})
     socketio.init_app(app, cors_allowed_origins=cors_origins)
 
-    limiter.init_app(app)
+    # limiter.init_app(app)
 
     db.init_app(app)
 
