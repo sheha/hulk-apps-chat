@@ -77,7 +77,14 @@ def list_room_members(room_id):
     if not room:
         return jsonify({"message": "Room not found"}), 404
 
-    members = [{'id': user.id, 'username': user.username} for user in room.members]
+    members = []
+    for user in room.members:
+        members.append({
+            'id': user.id,
+            'username': user.username,
+            'isCreator': user.id == room.creator_id
+        })
+    print(members)
     return jsonify({"members": members}), 200
 
 

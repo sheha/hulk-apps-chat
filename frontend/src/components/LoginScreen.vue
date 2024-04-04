@@ -24,7 +24,7 @@ export default {
           password: this.password,
         });
         localStorage.setItem('userToken', response.data.access_token);
-        await this.$router.push('/rooms');
+        await this.$router.push('/chat');
       } catch (error) {
         console.log(error)
       }

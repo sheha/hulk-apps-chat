@@ -2,8 +2,7 @@ import Vue from 'vue';
 import Router from 'vue-router';
 import HomePage from '@/components/HomePage.vue';
 import LoginScreen from '@/components/LoginScreen.vue';
-import ChatWindow from '@/components/ChatWindow.vue';
-import RoomsList from '@/components/RoomsList.vue';
+import ChatScreen from "@/components/ChatScreen.vue";
 import RegisterScreen from "@/components/RegisterScreen.vue";
 
 Vue.use(Router);
@@ -19,8 +18,8 @@ const router = new Router({
     { path: '/', name: 'Home', component: HomePage },
     { path: '/register', name: 'Register', component: RegisterScreen, meta: { requiresGuest: true } },
     { path: '/login', name: 'Login', component: LoginScreen, meta: { requiresGuest: true } },
-    { path: '/chat', name: 'Chat', component: ChatWindow, props: true, meta: { requiresAuth: true } },
-    { path: '/rooms', name: 'Rooms', component: RoomsList, meta: { requiresAuth: true } },
+    { path: '/chat', name: 'Chat', component: ChatScreen, props: true, meta: { requiresAuth: true } },
+    // { path: '/rooms', name: 'Rooms', component: RoomsList, meta: { requiresAuth: true } },
   ],
 });
 

@@ -1,137 +1,53 @@
 <template>
-  <div class="chat-area">
-    <div class="chat-window">
-      <div class="messages">
-        <div v-for="message in messages" :key="message.id" class="message">
-          <div><strong>{{ message.username }}</strong>: {{ message.message }}</div>
-          <div class="status">{{ message.status }}</div>
-        </div>
-      </div>
-      <div class="message-input">
-        <input v-model="newMessage" placeholder="Type a message..." @keyup.enter="sendMessage">
-        <button @click="sendMessage">Send</button>
+  <div class="chat-window">
+    <div class="message-list">
+      <div v-for="message in [...messages].reverse()" :key="message.id" class="message">
+        <span class="username">{{ message.username }}</span>
+        <span class="text">{{ message.message }}</span>
+        <span class="timestamp">{{ message.timestamp }}</span>
+        <!-- Here you can add icons or labels for message status -->
+        <span class="status">{{ message.status }}</span>
       </div>
     </div>
-    <div class="room-members">
-      <h3>Members</h3>
-      <ul>
-        <li v-for="member in members" :key="member.id">{{ member.username }}</li>
-      </ul>
+    <div class="message-input">
+      <input v-model="newMessage" placeholder="Type a message..." @keyup.enter="sendMessage"/>
+      <button @click="handleSendMessage">Send</button>
     </div>
   </div>
 </template>
 
 <script>
-import io from 'socket.io-client';
-import axios from 'axios';
+
 
 export default {
-  props: ['roomId'],
+  props: {
+    roomId: Number,
+    messages: Array,
+    sendMessage: Function
+  },
+
   data() {
     return {
-      messages: [],
-      newMessage: '',
-      socket: null,
-      members: [],
+      newMessage: ''
     };
   },
-  watch: {
-    roomId(newVal, oldVal) {
-      if (newVal !== oldVal) {
-        this.handleRoomChange();
-      }
-    },
-  },
-  mounted() {
-    this.initializeSocket();
-  },
-
   methods: {
-    initializeSocket() {
-      this.socket = io('http://localhost:5000', {
-        query: {token: localStorage.getItem('userToken')},
-      });
-
-      this.socket.on('connect', () => {
-        this.joinRoom();
-      });
-
-      this.socket.on('disconnect', (reason) => {
-        console.log(`Disconnected: ${reason}`);
-      });
-
-      this.socket.on('receive_message', this.receiveMessage);
-      this.socket.on('update_message_status', this.updateMessageStatus);
-    },
-    joinRoom() {
-      if (this.roomId) {
-        this.socket.emit('join', {
-          room: this.roomId,
-          token: localStorage.getItem('userToken'),
-        });
-        this.fetchRoomMembers();
-        this.fetchMessages();
-      }
-    },
-    handleRoomChange() {
-      if (this.socket) {
-        // Leave the old room if roomId changes
-        this.socket.emit('leave', {room: this.oldRoomId});
-        this.joinRoom(); // Join the new room
-      }
-    },
-    async fetchMessages() {
-      try {
-        const response = await axios.get(`http://localhost:5000/chat/rooms/${this.roomId}/messages`, {
-          headers: {Authorization: `Bearer ${localStorage.getItem('userToken')}`},
-        });
-        this.messages = response.data.messages;
-      } catch (error) {
-        console.error("Couldn't fetch messages:", error);
-      }
-    },
-    sendMessage() {
+    handleSendMessage() {
       if (!this.newMessage.trim()) return;
-      this.socket.emit('message', {room: this.roomId, message: this.newMessage});
+      this.sendMessage(this.newMessage);
       this.newMessage = '';
     },
-    receiveMessage(message) {
-      this.messages.push(message);
-    },
-    updateMessageStatus(data) {
-      const message = this.messages.find(m => m.id === data.message_id);
-      if (message) message.status = data.status;
-    },
-    async fetchRoomMembers() {
-      try {
-        const response = await axios.get(`http://localhost:5000/chat/rooms/${this.roomId}/members`, {
-          headers: {Authorization: `Bearer ${localStorage.getItem('userToken')}`},
-        });
-        this.members = response.data.members;
-      } catch (error) {
-        console.error("Couldn't fetch room members:", error);
-      }
-    },
-  },
-  beforeDestroy() {
-    if (this.socket) {
-      this.socket.emit('leave', {room: this.roomId});
-      this.socket.disconnect();
-    }
   },
 };
 </script>
 
 <style scoped>
-.chat-area {
-  display: flex;
-  justify-content: center;
-  background-color: var(--background-color);
-  color: var(--text-color);
-  font-size: 16px;
-}
 
-.chat-window, .room-members {
+.chat-window {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden; /* Prevents window from growing */
   background-color: #222;
   border: 2px solid var(--border-color);
   padding: 20px;
@@ -139,9 +55,9 @@ export default {
   border-radius: 8px;
 }
 
-.messages {
-  max-height: 300px;
-  overflow-y: auto;
+.message-list {
+  overflow-y: auto; /* Allows scrolling */
+  flex-grow: 1; /* Takes up all available space */
 }
 
 .message {
@@ -150,12 +66,36 @@ export default {
   margin-bottom: 10px;
   padding: 10px;
   border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+}
+
+.username {
+  font-weight: bold;
+}
+
+.text {
+  margin-left: 10px;
+  flex-grow: 1;
+}
+
+.timestamp {
+  font-size: 0.8em;
+  margin-left: 10px;
+}
+
+.status {
+  font-size: 0.8em;
+  margin-left: 10px;
+  /* Add icons or styles for different statuses */
 }
 
 .message-input {
   display: flex;
   justify-content: space-between;
-  margin-top: 20px;
+  margin-top: 1em;
 }
 
 input, button {

@@ -54,17 +54,48 @@ This document provides instructions for setting up and running the backend for t
       poetry run python app.py
       ```
 
+
+### Frontend Setup
+
+1. **Installing Dependencies**:
+   - Navigate to the frontend directory and install npm packages:
+     ```bash
+     npm install
+     ```
+
+2. **Running the Development Server**:
+   - Serve the application with hot reload at `localhost:8080`:
+     ```bash
+     npm run serve
+     ```
+
+3. **Building for Production**:
+   - Compile and minify for production:
+     ```bash
+     npm run build
+     ```
 ## Deployment
 
-This project is configured for deployment to Heroku with PostgreSQL and Redis add-ons. Follow the standard Heroku deployment process, ensuring that `DATABASE_URI` and `REDIS_URL` environment variables are set in your Heroku app settings to match the credentials provided by Heroku.
+This project is ready for deployment to Heroku with PostgreSQL and Redis add-ons. Set up your Heroku app and configure `DATABASE_URI` and `REDIS_URL` to match Heroku's add-on credentials.
 
 ## Features
 
-- Real-time chat functionality using Flask-SocketIO.
-- User authentication and registration.
-- Message persistence with PostgreSQL.
-- Environment isolation with Docker for local development.
-- Easy deployment setup for Heroku.
+- Real-time chat with multiple rooms.
+- User authentication and profile management.
+- Message status indicators (sent, delivered, read).
+- Online/offline user status.
+- Scalable architecture suitable for deploying on platforms like Heroku.
 
-For detailed information on project setup, features, and more, refer to the specific sections of this README.
+## File Structure
+
+- `backend/`: Contains all backend code including Flask application, SocketIO setup, models, migrations, and utilities.
+- `frontend/`: Houses the Vue.js application with components, assets, and service configurations.
+- `docker-compose.yml`: Docker configuration for local development services.
+- `Procfile`: Contains commands for Heroku deployment.
+
+## Contributing
+
+Contributions are welcome! For major changes, please open an issue first to discuss what you would like to change.
+
+Please make sure to update tests as appropriate.
 

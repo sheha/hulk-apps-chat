@@ -2,8 +2,8 @@
   <div id="app">
     <router-link to="/">Home</router-link> |
     <router-link v-if="!isLoggedIn" to="/login">Login</router-link> |
-    <router-link v-if="!isLoggedIn" to="/register">Register</router-link> |
-    <router-link v-if="isLoggedIn" to="/rooms">Chat Rooms</router-link> |
+    <router-link v-if="!isLoggedIn" to="/register">Register</router-link>
+    <router-link v-if="isLoggedIn" to="/chat">Chat Rooms</router-link> |
     <button v-if="isLoggedIn" @click="logout">Logout</button>
     <router-view/>
   </div>
